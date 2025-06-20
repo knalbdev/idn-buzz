@@ -1,9 +1,12 @@
 import HomePage from '../pages/home/home-page';
-import AboutPage from '../pages/about/about-page';
+import AddPage from '../pages/add/add-page';
+import AboutPage from '../pages/about/about-page'; 
 
 const routes = {
-  '/': new HomePage(),
-  '/about': new AboutPage(),
+  '/': HomePage,
+  '/home': HomePage,
+  '/add': AddPage, 
+  '/about': AboutPage,
 };
 
 export default routes;
