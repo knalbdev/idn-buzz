@@ -1,4 +1,4 @@
-import CONFIG from '../utils/config';
+import CONFIG from '../config'; 
 
 const API_ENDPOINT = {
   STORIES: `${CONFIG.BASE_URL}/stories`,

@@ -1,4 +1,4 @@
-import UrlParser from './utils/url-parser';
+import UrlParser from './url-parser'; 
 import routes from './routes/routes';
 import { ViewTransition } from './utils';
 
