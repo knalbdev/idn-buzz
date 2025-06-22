@@ -262,3 +262,40 @@ footer {
     font-size: 1.8rem;
   }
 }
+
+.camera-wrapper {
+  border: 2px dashed #d0d0d0;
+  padding: 1rem;
+}
+
+.camera-placeholder-image {
+  width: 100%;
+  max-height: 250px;
+  object-fit: contain; 
+  opacity: 0.5;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem; 
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  font-weight: 700;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+.btn i {
+  font-size: 0.9em;
+}
+
+.form-container textarea::placeholder {
+  color: #aaa;
+  font-style: italic;
+}

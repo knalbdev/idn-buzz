@@ -11,33 +11,49 @@ const createStoryItemTemplate = (story) => `
 
 const createStoryAddTemplate = () => `
     <section class="content">
-        <h2 class="content__heading">Share Your Story</h2>
+        <h2 class="content__heading">Share Your Amazing Story</h2>
         <div class="form-container">
           <form id="addStoryForm">
             <div class="form-group">
-              <label for="storyImage">Story Image</label> <div class="camera-wrapper">
-                <video id="cameraPreview" width="300" height="300" autoplay style="display: none;"></video>
-                <canvas id="imageCanvas" width="300" height="300" style="display: none;"></canvas>
-                <img id="capturedImage" src="#" alt="An image preview from the camera" style="display: none; max-width: 300px;"> </div>
-              <button type="button" id="startCameraBtn">Open Camera</button>
-              <button type="button" id="captureImageBtn" style="display: none;">Capture Image</button>
+              <label for="storyImage">Story Image</label>
+              <div class="camera-wrapper">
+                <img id="defaultImagePreview" src="images/image.png" alt="Default story image placeholder" class="camera-placeholder-image">
+                
+                <video id="cameraPreview" autoplay muted playsinline style="display: none;"></video>
+                
+                <canvas id="imageCanvas" style="display: none;"></canvas>
+                <img id="capturedImage" src="#" alt="An image preview from the camera" style="display: none;">
+              </div>
+              <div class="camera-buttons">
+                <button type="button" id="startCameraBtn" class="btn btn-dark">
+                  <i class="fas fa-camera"></i> Open Camera
+                </button>
+                <button type="button" id="captureImageBtn" class="btn btn-primary" style="display: none;">
+                  <i class="fas fa-camera-retro"></i> Capture Image
+                </button>
+              </div>
             </div>
             <div class="form-group">
-              <label for="storyDescription">Description</label> <textarea id="storyDescription" name="storyDescription" rows="5" required></textarea>
+              <label for="storyDescription">Description</label>
+              <textarea id="storyDescription" name="storyDescription" rows="5" required placeholder="Tell your story..."></textarea>
             </div>
             <div class="form-group">
-                <label for="map-add">Choose the Story Location</label> <div id="map-add" style="height: 300px; width: 100%;"></div>
+                <label for="map-add">Choose the Story Location</label>
+                <div id="map-add" style="height: 300px; width: 100%; border-radius: 12px;"></div>
                 <input type="hidden" id="latitude" name="latitude">
                 <input type="hidden" id="longitude" name="longitude">
             </div>
-            <button type="submit" id="submitStoryBtn">Send</button>
+            <button type="submit" id="submitStoryBtn" class="btn btn-primary">
+              <i class="fas fa-paper-plane"></i> Send Story
+            </button>
           </form>
         </div>
       </section>
 `;
 
-const createLoadingTemplate = () => `<div class="loading">Load Story data...</div>`;
-const createErrorTemplate = (message) => `<div class="error">An error occured: ${message}</div>`;
+const createLoadingTemplate = () => `<div class="loading">Loading stories...</div>`;
+
+const createErrorTemplate = (message) => `<div class="error">An error occurred: ${message}</div>`;
 
 const ViewTransition = {
   async start(callback) {
