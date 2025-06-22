@@ -39,20 +39,28 @@ const HomePage = {
   },
 
   _initializeMap(stories) {
-    const map = L.map('map').setView([-6.2088, 106.8456], 5); 
+    const map = L.map('map').setView([-6.2088, 106.8456], 5);
 
-    // a map layer
-    const googleStreets = L.tileLayer('http://{s}.google.com/vt?lyrs=m&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
+    const MAPTILER_API_KEY = 'Pr1kaqoqoJWS5JYG0w3S';
+
+    const streets = L.tileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`, {
+      attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+      maxZoom: 20,
     });
-    const googleSat = L.tileLayer('http://{s}.google.com/vt?lyrs=s,h&x={x}&y={y}&z={z}',{
-        maxZoom: 20,
-        subdomains:['mt0','mt1','mt2','mt3']
+    
+    const satellite = L.tileLayer(`https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${MAPTILER_API_KEY}`, {
+      attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
+      maxZoom: 20,
     });
-    googleStreets.addTo(map);
-    const baseLayers = { "Street": googleStreets, "Satelit": googleSat };
-    L.control.layers(baseLayers).addTo(map); 
+
+    streets.addTo(map);
+
+    const baseLayers = {
+      "Street": streets,
+      "Satelit": satellite,
+    };
+
+    L.control.layers(baseLayers).addTo(map);
 
     stories.forEach(story => {
       if (story.lat && story.lon) {
@@ -60,7 +68,7 @@ const HomePage = {
         marker.bindPopup(`<b>${story.name}</b><br>${story.description.substring(0, 30)}...`);
       }
     });
-  }
+  },
 };
 
 export default HomePage;

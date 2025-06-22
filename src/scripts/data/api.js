@@ -5,10 +5,15 @@ const API_ENDPOINT = {
   ADD_STORY: `${CONFIG.BASE_URL}/stories`,
 };
 
+const YOUR_AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLXpzN0hTMHdWSklIenVnbG0iLCJpYXQiOjE3NTA1NTM1ODB9.c9Ybkwcr1bbNjtBz-oGDTWoVFb9R3xbXWgk52IHG81M'; 
+
 class StoryApi {
-  // a function for getting all of the stories data
   static async getAllStories() {
-    const response = await fetch(API_ENDPOINT.STORIES);
+    const response = await fetch(API_ENDPOINT.STORIES, {
+      headers: {
+        'Authorization': `Bearer ${YOUR_AUTH_TOKEN}`,
+      },
+    });
     
     if (!response.ok) {
       throw new Error('Failed to load story');
@@ -18,7 +23,6 @@ class StoryApi {
     return responseJson.listStory;
   }
 
-  // a function for adding a new story
   static async addNewStory(storyData) {
     const formData = new FormData();
     formData.append('photo', storyData.photo);
@@ -28,6 +32,9 @@ class StoryApi {
 
     const response = await fetch(API_ENDPOINT.ADD_STORY, {
       method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${YOUR_AUTH_TOKEN}`,
+      },
       body: formData,
     });
 
