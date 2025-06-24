@@ -28,11 +28,11 @@ const LoginPage = {
         password: passwordInput.value,
       });
       UserSession.setUserToken(response.token);
-      alert('Login berhasil!');
+      alert('Login Successful!');
       window.location.hash = '#/home';
       window.location.reload();
     } catch (error) {
-      alert(`Login gagal: ${error.message}`);
+      alert(`Login Failed: ${error.message}`);
       submitButton.disabled = false;
       submitButton.innerText = 'Login';
     }

@@ -1,5 +1,3 @@
-// File: src/scripts/utils/index.js
-
 const createStoryItemTemplate = (story) => `
   <article class="story-item">
     <img class="story-item__thumbnail" 
@@ -47,7 +45,6 @@ const createStoryAddTemplate = () => `
       </section>
 `;
 
-// FUNGSI BARU UNTUK TEMPLATE LOGIN
 const createLoginTemplate = () => `
   <section class="content">
     <h2 class="content__heading">Login to IDN Buzz</h2>
@@ -70,7 +67,6 @@ const createLoginTemplate = () => `
   </section>
 `;
 
-// FUNGSI BARU UNTUK TEMPLATE REGISTER (JIKA BELUM ADA)
 const createRegisterTemplate = () => `
   <section class="content">
     <h2 class="content__heading">Create Your Account</h2>
@@ -91,7 +87,7 @@ const createRegisterTemplate = () => `
         <button type="submit" id="submitRegister" class="btn btn-primary">Register</button>
       </form>
       <div class="form-link">
-        <p>Sudah punya akun? <a href="#/login">Login di sini</a></p>
+        <p>Sudah punya akun? <a href="#/login">Login Here</a></p>
       </div>
     </div>
   </section>
@@ -106,7 +102,6 @@ const ViewTransition = {
   },
 };
 
-// PERBAIKAN: MENAMBAHKAN createLoginTemplate & createRegisterTemplate KE DALAM EXPORT
 export {
   createStoryItemTemplate,
   createStoryAddTemplate,

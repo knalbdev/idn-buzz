@@ -23,18 +23,16 @@ const HomePage = {
     });
   },
 
-  // FUNGSI INI DIPERBARUI MENJADI LEBIH SEDERHANA DAN AMAN
   renderStories(stories) {
     const storiesContainer = document.querySelector('#stories');
-    storiesContainer.innerHTML = ''; // Kosongkan container
+    storiesContainer.innerHTML = ''; 
 
     if (!stories || stories.length === 0) {
       storiesContainer.innerHTML = '<p class="error">No stories to display at the moment.</p>';
-      this._initializeMap([]); // Tetap inisialisasi peta kosong
+      this._initializeMap([]); 
       return;
     }
 
-    // Langsung render semua cerita, template akan menangani jika ada data kosong
     stories.forEach((story) => {
       storiesContainer.innerHTML += createStoryItemTemplate(story);
     });

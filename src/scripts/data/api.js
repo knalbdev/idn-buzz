@@ -32,13 +32,12 @@ class StoryApi {
     if (responseJson.error) {
       throw new Error(responseJson.message);
     }
-    // PERBAIKAN: Tambahkan baris return ini
     return responseJson.loginResult;
   }
 
   static async getAllStories() {
     const token = UserSession.getUserToken();
-    if (!token) throw new Error('Anda harus login terlebih dahulu.');
+    if (!token) throw new Error('Please login first.');
 
     const response = await fetch(API_ENDPOINT.STORIES, {
       headers: { Authorization: `Bearer ${token}` },
@@ -50,7 +49,7 @@ class StoryApi {
 
   static async addNewStory(storyData) {
     const token = UserSession.getUserToken();
-    if (!token) throw new Error('Anda harus login terlebih dahulu.');
+    if (!token) throw new Error('Please login first.');
 
     const formData = new FormData();
     formData.append('photo', storyData.photo);
