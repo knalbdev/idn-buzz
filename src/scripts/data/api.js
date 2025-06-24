@@ -2,47 +2,56 @@ import CONFIG from '../config';
 import UserSession from '../utils/session-storage';
 
 const API_ENDPOINT = {
+  REGISTER: `${CONFIG.BASE_URL}/register`,
   LOGIN: `${CONFIG.BASE_URL}/login`,
   STORIES: `${CONFIG.BASE_URL}/stories`,
   ADD_STORY: `${CONFIG.BASE_URL}/stories`,
 };
 
 class StoryApi {
+  static async register({ name, email, password }) {
+    const response = await fetch(API_ENDPOINT.REGISTER, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, email, password }),
+    });
+    const responseJson = await response.json();
+    if (responseJson.error) {
+      throw new Error(responseJson.message);
+    }
+    return responseJson;
+  }
+
   static async login({ email, password }) {
     const response = await fetch(API_ENDPOINT.LOGIN, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, password }),
     });
     const responseJson = await response.json();
     if (responseJson.error) {
       throw new Error(responseJson.message);
     }
+    // PERBAIKAN: Tambahkan baris return ini
     return responseJson.loginResult;
   }
 
   static async getAllStories() {
     const token = UserSession.getUserToken();
-    if (!token) {
-      throw new Error('Yo must log in first.');
-    }
+    if (!token) throw new Error('Anda harus login terlebih dahulu.');
+
     const response = await fetch(API_ENDPOINT.STORIES, {
       headers: { Authorization: `Bearer ${token}` },
     });
     const responseJson = await response.json();
-    if (responseJson.error) {
-      throw new Error(responseJson.message);
-    }
+    if (responseJson.error) throw new Error(responseJson.message);
     return responseJson.listStory;
   }
 
   static async addNewStory(storyData) {
     const token = UserSession.getUserToken();
-    if (!token) {
-      throw new Error('You must login first.');
-    }
+    if (!token) throw new Error('Anda harus login terlebih dahulu.');
+
     const formData = new FormData();
     formData.append('photo', storyData.photo);
     formData.append('description', storyData.description);
@@ -55,11 +64,8 @@ class StoryApi {
       body: formData,
     });
     const responseJson = await response.json();
-    if (responseJson.error) {
-      throw new Error(responseJson.message);
-    }
+    if (responseJson.error) throw new Error(responseJson.message);
     return responseJson;
   }
 }
-
 export default StoryApi;

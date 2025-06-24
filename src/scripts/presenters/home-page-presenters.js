@@ -2,7 +2,6 @@ class HomePagePresenter {
   constructor({ view, model }) {
     this._view = view;
     this._model = model;
-
     this._displayInitialStories();
   }
 
@@ -15,5 +14,4 @@ class HomePagePresenter {
     }
   }
 }
-
 export default HomePagePresenter;

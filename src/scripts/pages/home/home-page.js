@@ -1,4 +1,5 @@
 import StoryApi from '../../data/api';
+import HomePagePresenter from '../../presenters/home-page-presenters';
 import { createStoryItemTemplate, createLoadingTemplate, createErrorTemplate } from '../../utils';
 
 const HomePage = {
@@ -16,56 +17,52 @@ const HomePage = {
   },
 
   async afterRender() {
-    try {
-        const stories = await StoryApi.getAllStories();
-        this._renderStories(stories);
-        this._initializeMap(stories);
-    } catch (error) {
-        this._renderError(error.message);
-    }
-  },
-
-  _renderStories(stories) {
-    const storiesContainer = document.querySelector('#stories');
-    storiesContainer.innerHTML = '';
-    stories.forEach((story) => {
-      storiesContainer.innerHTML += createStoryItemTemplate(story);
+    new HomePagePresenter({
+      view: this,
+      model: StoryApi,
     });
   },
 
-  _renderError(message) {
+  // FUNGSI INI DIPERBARUI MENJADI LEBIH SEDERHANA DAN AMAN
+  renderStories(stories) {
+    const storiesContainer = document.querySelector('#stories');
+    storiesContainer.innerHTML = ''; // Kosongkan container
+
+    if (!stories || stories.length === 0) {
+      storiesContainer.innerHTML = '<p class="error">No stories to display at the moment.</p>';
+      this._initializeMap([]); // Tetap inisialisasi peta kosong
+      return;
+    }
+
+    // Langsung render semua cerita, template akan menangani jika ada data kosong
+    stories.forEach((story) => {
+      storiesContainer.innerHTML += createStoryItemTemplate(story);
+    });
+
+    this._initializeMap(stories);
+  },
+
+  renderError(message) {
     const storiesContainer = document.querySelector('#stories');
     storiesContainer.innerHTML = createErrorTemplate(message);
   },
 
   _initializeMap(stories) {
     const map = L.map('map').setView([-6.2088, 106.8456], 5);
-
     const MAPTILER_API_KEY = 'Pr1kaqoqoJWS5JYG0w3S';
-
     const streets = L.tileLayer(`https://api.maptiler.com/maps/streets-v2/{z}/{x}/{y}.png?key=${MAPTILER_API_KEY}`, {
       attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
-      maxZoom: 20,
     });
-    
     const satellite = L.tileLayer(`https://api.maptiler.com/maps/satellite/{z}/{x}/{y}.jpg?key=${MAPTILER_API_KEY}`, {
       attribution: '<a href="https://www.maptiler.com/copyright/" target="_blank">&copy; MapTiler</a> <a href="https://www.openstreetmap.org/copyright" target="_blank">&copy; OpenStreetMap contributors</a>',
-      maxZoom: 20,
     });
-
     streets.addTo(map);
-
-    const baseLayers = {
-      "Street": streets,
-      "Satelit": satellite,
-    };
-
+    const baseLayers = { "Street": streets, "Satelit": satellite };
     L.control.layers(baseLayers).addTo(map);
-
     stories.forEach(story => {
-      if (story.lat && story.lon) {
+      if (story && story.lat && story.lon) {
         const marker = L.marker([story.lat, story.lon]).addTo(map);
-        marker.bindPopup(`<b>${story.name}</b><br>${story.description.substring(0, 30)}...`);
+        marker.bindPopup(`<b>${story.name || 'No Title'}</b><br>${(story.description || '').substring(0, 30)}...`);
       }
     });
   },

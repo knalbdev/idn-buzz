@@ -2,7 +2,6 @@ class AddPagePresenter {
   constructor({ view, model }) {
     this._view = view;
     this._model = model;
-
     this._view.setupForm(this.handleFormSubmit.bind(this));
   }
 
@@ -16,5 +15,4 @@ class AddPagePresenter {
     }
   }
 }
-
 export default AddPagePresenter;

@@ -1,4 +1,5 @@
 import StoryApi from '../../data/api';
+import AddPagePresenter from '../../presenters/add-page-presenter';
 import { createStoryAddTemplate } from '../../utils';
 
 const AddPage = {
@@ -7,47 +8,31 @@ const AddPage = {
   },
 
   async afterRender() {
-    this._setupForm();
-  },
-
-  _setupForm() {
-    const addStoryForm = document.querySelector('#addStoryForm');
+    this._presenter = new AddPagePresenter({ view: this, model: StoryApi });
     this._initializeCamera();
     this._initializeMap();
+  },
 
-    addStoryForm.addEventListener('submit', async (event) => {
+  setupForm(submitCallback) {
+    const addStoryForm = document.querySelector('#addStoryForm');
+    addStoryForm.addEventListener('submit', (event) => {
       event.preventDefault();
-
-      const description = document.querySelector('#storyDescription').value;
-      const lat = document.querySelector('#latitude').value;
-      const lon = document.querySelector('#longitude').value;
-
-      if (!this._capturedBlob || !description || !lat) {
-        alert('Please complete all of the data: image, description, and please choose the location from the map.');
-        return;
-      }
-
-      const storyData = {
-        photo: this._capturedBlob,
-        description,
-        lat,
-        lon,
-      };
-
-      try {
-        document.querySelector('#submitStoryBtn').innerText = 'Sending...';
-        document.querySelector('#submitStoryBtn').disabled = true;
-
-        await StoryApi.addNewStory(storyData);
-
-        alert('Story added successfully!');
-        window.location.hash = '#/home';
-      } catch (error) {
-        alert(`Failed to add story: ${error.message}`);
-        document.querySelector('#submitStoryBtn').innerText = 'Send Story';
-        document.querySelector('#submitStoryBtn').disabled = false;
+      const storyData = this._getFormData();
+      if (storyData) {
+        submitCallback(storyData);
       }
     });
+  },
+  
+  _getFormData() {
+    const description = document.querySelector('#storyDescription').value;
+    const lat = document.querySelector('#latitude').value;
+    const lon = document.querySelector('#longitude').value;
+    if (!this._capturedBlob || !description || !lat) {
+      alert('Please complete all of the data: image, description, and please choose the location from the map.');
+      return null;
+    }
+    return { photo: this._capturedBlob, description, lat, lon };
   },
 
   _initializeCamera() {
@@ -56,15 +41,12 @@ const AddPage = {
     const cameraPreview = document.querySelector('#cameraPreview');
     const imageCanvas = document.querySelector('#imageCanvas');
     const capturedImage = document.querySelector('#capturedImage');
-    
     const defaultImagePreview = document.querySelector('#defaultImagePreview');
 
     startCameraBtn.addEventListener('click', async () => {
       try {
         this._stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-        
         defaultImagePreview.style.display = 'none';
-        
         cameraPreview.srcObject = this._stream;
         cameraPreview.style.display = 'block';
         captureImageBtn.style.display = 'inline-block';
@@ -81,14 +63,9 @@ const AddPage = {
       imageCanvas.width = cameraPreview.videoWidth;
       imageCanvas.height = cameraPreview.videoHeight;
       context.drawImage(cameraPreview, 0, 0, imageCanvas.width, imageCanvas.height);
-
       capturedImage.src = imageCanvas.toDataURL('image/jpeg');
       capturedImage.style.display = 'block';
-
-      imageCanvas.toBlob(blob => {
-        this._capturedBlob = blob;
-      }, 'image/jpeg');
-
+      imageCanvas.toBlob(blob => { this._capturedBlob = blob; }, 'image/jpeg');
       this._stream.getTracks().forEach(track => track.stop());
       cameraPreview.style.display = 'none';
       captureImageBtn.style.display = 'none';
@@ -106,7 +83,6 @@ const AddPage = {
       const { lat, lng } = e.latlng;
       document.querySelector('#latitude').value = lat;
       document.querySelector('#longitude').value = lng;
-
       if (marker) {
         marker.setLatLng(e.latlng);
       } else {
@@ -114,7 +90,28 @@ const AddPage = {
       }
       marker.bindPopup(`Location selected: ${lat.toFixed(5)}, ${lng.toFixed(5)}`).openPopup();
     });
-  }
-};
+  },
+  
+  showLoading() {
+    const submitButton = document.querySelector('#submitStoryBtn');
+    submitButton.innerText = 'Sending...';
+    submitButton.disabled = true;
+  },
+  showError(message) {
+    const submitButton = document.querySelector('#submitStoryBtn');
+    alert(`Failed to add story: ${message}`);
+    submitButton.innerText = 'Send Story';
+    submitButton.disabled = false;
+  },
+  showSuccessAndRedirect() {
+    alert('Story added successfully!');
+    window.location.hash = '#/home';
+  },
 
+  destroy() {
+    if (this._stream) {
+      this._stream.getTracks().forEach((track) => track.stop());
+    }
+  },
+};
 export default AddPage;
