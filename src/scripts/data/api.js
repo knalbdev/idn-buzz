@@ -1,29 +1,48 @@
-import CONFIG from '../config'; 
+import CONFIG from '../config';
+import UserSession from '../utils/session-storage';
 
 const API_ENDPOINT = {
+  LOGIN: `${CONFIG.BASE_URL}/login`,
   STORIES: `${CONFIG.BASE_URL}/stories`,
   ADD_STORY: `${CONFIG.BASE_URL}/stories`,
 };
 
-const YOUR_AUTH_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJ1c2VyLXpzN0hTMHdWSklIenVnbG0iLCJpYXQiOjE3NTA1NTM1ODB9.c9Ybkwcr1bbNjtBz-oGDTWoVFb9R3xbXWgk52IHG81M'; 
-
 class StoryApi {
-  static async getAllStories() {
-    const response = await fetch(API_ENDPOINT.STORIES, {
+  static async login({ email, password }) {
+    const response = await fetch(API_ENDPOINT.LOGIN, {
+      method: 'POST',
       headers: {
-        'Authorization': `Bearer ${YOUR_AUTH_TOKEN}`,
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({ email, password }),
     });
-    
-    if (!response.ok) {
-      throw new Error('Failed to load story');
-    }
-
     const responseJson = await response.json();
+    if (responseJson.error) {
+      throw new Error(responseJson.message);
+    }
+    return responseJson.loginResult;
+  }
+
+  static async getAllStories() {
+    const token = UserSession.getUserToken();
+    if (!token) {
+      throw new Error('Yo must log in first.');
+    }
+    const response = await fetch(API_ENDPOINT.STORIES, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const responseJson = await response.json();
+    if (responseJson.error) {
+      throw new Error(responseJson.message);
+    }
     return responseJson.listStory;
   }
 
   static async addNewStory(storyData) {
+    const token = UserSession.getUserToken();
+    if (!token) {
+      throw new Error('You must login first.');
+    }
     const formData = new FormData();
     formData.append('photo', storyData.photo);
     formData.append('description', storyData.description);
@@ -32,18 +51,14 @@ class StoryApi {
 
     const response = await fetch(API_ENDPOINT.ADD_STORY, {
       method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${YOUR_AUTH_TOKEN}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
       body: formData,
     });
-
-    if (!response.ok) {
-      const responseJson = await response.json();
-      throw new Error(responseJson.message || 'Failed to add story');
+    const responseJson = await response.json();
+    if (responseJson.error) {
+      throw new Error(responseJson.message);
     }
-    
-    return response.json();
+    return responseJson;
   }
 }
 
